@@ -1,0 +1,11 @@
+---
+# vars file for ansible_galaxy_role_ubuntu_keychain-ssh-keys
+customize:
+  file:
+    name: keychain_ssh_keys
+    dest_path: /etc/keychain_ssh_keys
+
+shell:
+  rc:
+    file:
+      path: $HOME/.bashrc

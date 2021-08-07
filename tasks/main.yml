@@ -1,0 +1,35 @@
+---
+# tasks file for ansible_galaxy_role_ubuntu_keychain-ssh-keys
+- name: "Keychain ssh keys | copy file"
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+  copy:
+    src: "{{ customize.file.name }}"
+    dest: "{{ customize.file.dest_path }}"
+
+- name: "Keychain ssh keys | inform file path is not defined"
+  become: yes
+  ignore_errors: yes
+  debug:
+    msg: "A variable 'ansible_inventory_ssh_keys_list_file_path' is not defined. But this is not an error."
+  when: ansible_inventory_ssh_keys_list_file_path is not defined
+
+- name: "Keychain ssh keys | export file path"
+  ignore_errors: "{{ ansible_check_mode }}"
+  shell:
+    cmd: |
+      cat "{{ shell.rc.file.path }}" | grep "export SSH_KEYS_LIST_FILE_PATH=" >/dev/null
+      if [ $? -ne 0 ]; then
+          echo -n "\n" >> "{{ shell.rc.file.path }}"
+          echo "export SSH_KEYS_LIST_FILE_PATH=\"{{ ansible_inventory_ssh_keys_list_file_path }}\"" >> "{{ shell.rc.file.path }}"
+      fi
+  when: ansible_inventory_ssh_keys_list_file_path is defined
+
+- name: "Keychain ssh keys | set customize settings"
+  ignore_errors: "{{ ansible_check_mode }}"
+  shell:
+    cmd: |
+      cat "{{ shell.rc.file.path }}" | grep ". {{ customize.file.dest_path }}" >/dev/null
+      if [ $? -ne 0 ]; then
+          echo ". {{ customize.file.dest_path }}" >> "{{ shell.rc.file.path }}"
+      fi
