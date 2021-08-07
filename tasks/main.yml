@@ -1,5 +1,14 @@
 ---
 # tasks file for ansible_galaxy_role_ubuntu_keychain-ssh-keys
+
+- name: "Keychain ssh keys | install package"
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+  apt:
+    update_cache: yes
+    pkg:
+      - keychain
+
 - name: "Keychain ssh keys | copy file"
   become: yes
   ignore_errors: "{{ ansible_check_mode }}"
